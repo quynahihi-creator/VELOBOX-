@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VELOBOX - Hệ thống Tủ Giao Nhận Hàng Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        velogray: {
+                            850: '#18212f',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .dark-glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="h-full bg-slate-100 text-slate-800 flex flex-col justify-between">
+
+    <header class="bg-velogray-900 text-white shadow-md z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-velogray-900 font-bold p-2 rounded-xl text-xl flex items-center justify-center w-10 h-10 shadow-lg">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-wider bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">VELOBOX</span>
+                    <span class="text-xs block text-slate-400 font-medium">Smart Locker Station - B2B SaaS</span>
+                </div>
+            </div>
+            
+            <div id="userStatus" class="hidden flex items-center space-x-4">
+                <div class="text-right hidden sm:block">
+                    <p id="navUserName" class="text-sm font-semibold text-emerald-400">Nguyễn Văn Cư Dân</p>
+                    <p id="navUserRole" class="text-xs text-slate-400">Vai trò: Cư dân</p>
+                </div>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-1.5 shadow">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Đăng xuất</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
+
+        <!-- ==================== LOGIN SECTION ==================== -->
+        <div id="loginSection" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-slate-200">
+            <!-- Left Info Panel -->
+            <div class="md:col-span-5 bg-gradient-to-br from-velogray-900 via-velogray-850 to-brand-900 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <div>
+                    <div class="inline-block bg-brand-500/20 text-brand-400 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-brand-500/30">
+                        Đồ án Đề tài VELOBOX - 2026
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-3">Hệ Thống Tủ Giao Nhận Hàng Thông Minh</h1>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Giải pháp giao nhận chặng cuối (Last-Mile Delivery) tự động 24/7 với hạ tầng Hộp trực tuyến, cảm biến IoT chống gian lận và thông báo Zalo ZNS.
+                    </p>
+                </div>
+                <div class="mt-8 space-y-3">
+                    <div class="flex items-center space-x-3 text-xs text-slate-300 bg-white/5 p-2.5 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-shield-halved text-brand-400 text-base"></i>
+                        <span>Xác thực OTP & Mã QR bảo mật tuyệt đối</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-xs text-slate-300 bg-white/5 p-2.5 rounded-xl border border-white/10">
+                        <i class="fa-solid fa-bolt text-brand-400 text-base"></i>
+                        <span>Tích hợp đa nền tảng B2B SaaS & AI Dynamic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Login Form Panel -->
+            <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-900">Đăng Nhập Hệ Thống</h2>
+                    <p class="text-sm text-slate-500 mt-1">Vui lòng chọn vai trò theo yêu cầu phân hệ báo cáo để trải nghiệm giao diện</p>
+                </div>
+
+                <!-- Role Selector Tabs -->
+                <div class="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-xl mb-6">
+                    <button type="button" onclick="switchLoginRole('resident')" id="tabResident" class="py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-white text-brand-700 shadow transition flex flex-col items-center justify-center space-y-1">
+                        <i class="fa-solid fa-house-user text-base"></i>
+                        <span>Cư Dân</span>
+                    </button>
+                    <button type="button" onclick="switchLoginRole('shipper')" id="tabShipper" class="py-2.5 px-3 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition flex flex-col items-center justify-center space-y-1">
+                        <i class="fa-solid fa-truck-fast text-base"></i>
+                        <span>Shipper</span>
+                    </button>
+                    <button type="button" onclick="switchLoginRole('admin')" id="tabAdmin" class="py-2.5 px-3 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition flex flex-col items-center justify-center space-y-1">
+                        <i class="fa-solid fa-user-gear text-base"></i>
+                        <span>Quản Trị</span>
+                    </button>
+                </div>
+
+                <!-- Login Forms -->
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                    <input type="hidden" id="selectedRole" value="resident">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" id="loginIdLabel">Số điện thoại / Căn hộ</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i id="loginIcon" class="fa-solid fa-phone"></i>
+                            </span>
+                            <input type="text" id="loginUsername" required class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition" placeholder="Nhập số điện thoại đăng nhập...">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Mật khẩu / Mã PIN</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" id="loginPassword" required class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4">
+                            <span>Ghi nhớ tài khoản</span>
+                        </label>
+                        <a href="#" onclick="showQuickDemoNote()" class="text-brand-600 hover:underline font-medium">Tài khoản demo nhanh?</a>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center space-x-2">
+                        <span>Đăng Nhập Hệ Thống</span>
+                        <i class="fa-solid fa-arrow-right-long"></i>
+                    </button>
+                </form>
+
+                <!-- Quick Accounts Hint -->
+                <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 flex flex-wrap gap-2 items-center justify-between">
+                    <span class="font-semibold text-slate-700">Gợi ý thử nghiệm nhanh:</span>
+                    <button onclick="fillDemoAccount('resident')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-medium transition">Cư dân (A-1204)</button>
+                    <button onclick="fillDemoAccount('shipper')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-medium transition">Shipper (SPX)</button>
+                    <button onclick="fillDemoAccount('admin')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-medium transition">Admin BQL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DASHBOARD SECTION ==================== -->
+        <div id="dashboardSection" class="hidden w-full max-w-7xl mx-auto space-y-6">
+            
+            <!-- Dynamic Role Panels will be injected here -->
+            <div id="roleDashboardContent"></div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500">
+        <p>Đồ án Phát triển Hệ thống Thương mại Điện tử - Đề tài: Tủ Giao Nhận Hàng Thông Minh VELOBOX © 2026</p>
+    </footer>
+
+    <!-- Custom Toast / Notification Modal -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+        <div id="toastIcon" class="text-brand-400 text-xl">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+            <p id="toastTitle" class="text-sm font-bold">Thành công</p>
+            <p id="toastMessage" class="text-xs text-slate-300">Thao tác đã được thực hiện thành công.</p>
+        </div>
+    </div>
+
+    <script>
+        // Mock State Data
+        let currentUser = null;
+        let lockers = [
+            { id: 'VB-01', location: 'Sảnh Tòa A - Chung cư Thủy Lợi', total: 24, available: 8, status: 'Hoạt động tốt', temp: '24°C' },
+            { id: 'VB-02', location: 'Tầng hầm B1 - Tòa R2', total: 30, available: 12, status: 'Hoạt động tốt', temp: '18°C (Khoang Mát)' },
+            { id: 'VB-03', location: 'Khu vực Cổng chính - Cụm nhà liền kề', total: 18, available: 2, status: 'Đang bảo trì', temp: '25°C' }
+        ];
+
+        let packages = [
+            { trackingCode: 'SPXVN09283102', resident: 'Nguyễn Văn Cư Dân', room: 'A-1204', lockerId: 'VB-01', size: 'M', status: 'Đang chờ nhận', otp: '482910', date: '13/10/2026 14:20' },
+            { trackingCode: 'GHN882910392', resident: 'Trần Thị Mai', room: 'B-0802', lockerId: 'VB-02', size: 'S (Khoang Mát)', status: 'Đang chờ nhận', otp: '719204', date: '13/10/2026 15:10' },
+            { trackingCode: 'GHTK49201928', resident: 'Lê Hoàng Long', room: 'C-0401', lockerId: 'VB-01', size: 'L', status: 'Đã hoàn thành', otp: '102938', date: '12/10/2026 09:30' }
+        ];
+
+        // Switch Login Role Tabs
+        function switchLoginRole(role) {
+            document.getElementById('selectedRole').value = role;
+            const tabRes = document.getElementById('tabResident');
+            const tabShip = document.getElementById('tabShipper');
+            const tabAdm = document.getElementById('tabAdmin');
+            
+            tabRes.className = "py-2.5 px-3 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition flex flex-col items-center justify-center space-y-1";
+            tabShip.className = "py-2.5 px-3 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition flex flex-col items-center justify-center space-y-1";
+            tabAdm.className = "py-2.5 px-3 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 transition flex flex-col items-center justify-center space-y-1";
+
+            const lbl = document.getElementById('loginIdLabel');
+            const inp = document.getElementById('loginUsername');
+            const icon = document.getElementById('loginIcon');
+
+            if(role === 'resident') {
+                tabRes.className = "py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-white text-brand-700 shadow transition flex flex-col items-center justify-center space-y-1";
+                lbl.innerText = "Số điện thoại / Căn hộ";
+                inp.placeholder = "Ví dụ: 0912345678 hoặc A-1204";
+                icon.className = "fa-solid fa-phone";
+            } else if(role === 'shipper') {
+                tabShip.className = "py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-white text-brand-700 shadow transition flex flex-col items-center justify-center space-y-1";
+                lbl.innerText = "Mã Shipper / SĐT Đối tác";
+                inp.placeholder = "Ví dụ: SHIPPER_SPX01";
+                icon.className = "fa-solid fa-truck-fast";
+            } else {
+                tabAdm.className = "py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-white text-brand-700 shadow transition flex flex-col items-center justify-center space-y-1";
+                lbl.innerText = "Tên đăng nhập Quản trị";
+                inp.placeholder = "admin_velobox";
+                icon.className = "fa-solid fa-user-gear";
+            }
+        }
+
+        // Fill Demo Account Helper
+        function fillDemoAccount(role) {
+            switchLoginRole(role);
+            const inp = document.getElementById('loginUsername');
+            const pwd = document.getElementById('loginPassword');
+            if(role === 'resident') {
+                inp.value = '0988123456 (A-1204)';
+            } else if(role === 'shipper') {
+                inp.value = 'SHIP_SPX_HN';
+            } else {
+                inp.value = 'admin_thuyloi';
+            }
+            pwd.value = '123456';
+        }
+
+        function showQuickDemoNote() {
+            showToast("Gợi ý", "Bạn có thể bấm vào các nút 'Gợi ý thử nghiệm nhanh' bên dưới để điền form tự động!", "info");
+        }
+
+        // Handle Login Submission
+        function handleLogin(event) {
+            event.preventDefault();
+            const role = document.getElementById('selectedRole').value;
+            
+            currentUser = {
+                role: role,
+                name: role === 'resident' ? 'Nguyễn Văn Cư Dân (A-1204)' : (role === 'shipper' ? 'Phạm Văn Shipper (SPX Express)' : 'ThS. Quản Trị Hệ Thống (BQL)')
+            };
+
+            // Toggle views
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userStatus').classList.remove('hidden');
+
+            document.getElementById('navUserName').innerText = currentUser.name;
+            document.getElementById('navUserRole').innerText = `Vai trò: ${role === 'resident' ? 'Cư dân chung cư' : (role === 'shipper' ? 'Nhân viên giao hàng' : 'Quản trị viên Admin')}`;
+
+            renderDashboard(role);
+            showToast("Đăng nhập thành công", `Chào mừng bạn đến với phân hệ ${currentUser.role.toUpperCase()} VELOBOX`, "success");
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('userStatus').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+            showToast("Đã đăng xuất", "Phiên làm việc đã kết thúc an toàn.", "info");
+        }
+
+        // Render Dashboard based on Role
+        function renderDashboard(role) {
+            const container = document.getElementById('roleDashboardContent');
+            if(role === 'resident') {
+                container.innerHTML = getResidentDashboardHTML();
+            } else if(role === 'shipper') {
+                container.innerHTML = getShipperDashboardHTML();
+            } else {
+                container.innerHTML = getAdminDashboardHTML();
+            }
+        }
+
+        // ==================== 1. RESIDENT DASHBOARD ====================
+        function getResidentDashboardHTML() {
+            return `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Active Packages -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                                    <i class="fa-solid fa-box text-brand-600"></i>
+                                    <span>Hộp Trực Tuyến & Kiện Hàng Của Tôi</span>
+                                </h3>
+                                <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Căn hộ: A-1204</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-bold text-slate-900">Mã vận đơn: SPXVN09283102</span>
+                                            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded font-medium">Đang chờ nhận</span>
+                                        </div>
+                                        <p class="text-xs text-slate-600">Trạm tủ: <b>VB-01 (Sảnh Tòa A)</b> - Ngõ ô tô tránh</p>
+                                        <p class="text-xs text-slate-500">Thời gian gửi: 13/10/2026 14:20 (Miễn phí 24h đầu)</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2 w-full sm:w-auto">
+                                        <button onclick="openLockerModal('SPXVN09283102', '482910')" class="flex-1 sm:flex-none bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow transition flex items-center justify-center space-x-1.5">
+                                            <i class="fa-solid fa-qrcode"></i>
+                                            <span>Mã Nhận Tủ (OTP/QR)</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 opacity-75">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-bold text-slate-900">Mã vận đơn: GHTK49201928</span>
+                                            <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-medium">Đã hoàn thành</span>
+                                        </div>
+                                        <p class="text-xs text-slate-600">Trạm tủ: <b>VB-01 (Sảnh Tòa A)</b></p>
+                                        <p class="text-xs text-slate-500">Đã lấy hàng: 12/10/2026 09:30</p>
+                                    </div>
+                                    <span class="text-xs text-slate-400 font-medium">Đã lưu lịch sử</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- C2C & AI Cold Storage Section -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-snowflake text-sky-500"></i>
+                               <span>Giải pháp Khoang Mát Thông Minh & C2C Nội khu</span>
+                            </h3>
+                            <p class="text-xs text-slate-600 mb-4">Bạn có thể ký gửi đồ dùng cá nhân cho hàng xóm hoặc đặt đồ ăn tươi sống (GrabMart/ShopeeFood) chọn khoang mát tự động.</p>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="simulateC2CDropoff()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                    <span>Tạo đơn Ký gửi C2C Nội khu</span>
+                                </button>
+                                <button onclick="simulateColdStorage()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center space-x-2">
+                                    <i class="fa-solid fa-temperature-arrow-down"></i>
+                                    <span>Đăng ký Khoang Mát (Micro-Cold)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: AI Chatbot & Map Info -->
+                    <div class="space-y-6">
+                        <!-- AI Chatbot Assistant -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col h-[380px]">
+                            <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center space-x-2 border-b pb-2">
+                                <i class="fa-solid fa-robot text-brand-600"></i>
+                                <span>Trợ lý AI VELOBOX Tư vấn 24/7</span>
+                            </h3>
+                            <div id="chatMessages" class="flex-grow overflow-y-auto space-y-3 pr-2 text-xs">
+                                <div class="bg-slate-100 p-2.5 rounded-xl text-slate-700">
+                                    Chào cư dân căn hộ A-1204! Tôi có thể hỗ trợ gì về vị trí trạm tủ hoặc cách lấy mã OTP mở tủ hôm nay?
+                                </div>
+                            </div>
+                            <div class="mt-3 flex space-x-2">
+                                <input type="text" id="chatInput" placeholder="Nhập câu hỏi..." class="flex-grow text-xs border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                                <button onclick="sendChatMessage()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Zalo ZNS Mock Card -->
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-md">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fa-solid fa-comment-sms text-xl"></i>
+                                <span class="font-bold text-sm">Thông báo Zalo ZNS Tự Động</span>
+                            </div>
+                            <p class="text-xs text-blue-100 leading-relaxed">
+                                Hệ thống tự động gửi tin nhắn Zalo kèm định vị và mã QR mở tủ ngay khi shipper nạp hàng thành công. Không cần tải App rườm rà!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== 2. SHIPPER DASHBOARD ====================
+        function getShipperDashboardHTML() {
+            return `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Shipper Actions -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                                    <i class="fa-solid fa-truck-fast text-brand-600"></i>
+                                    <span>Giao diện Thao tác Shipper (SPX / GHN / GHTK)</span>
+                                </h3>
+                                <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full">Đối tác: SPX Express</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">1. Quét Mã Vận Đơn (Barcode / QR)</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Đưa tem vận đơn vào camera đầu đọc AI để tự động nhận diện thông tin người nhận & kích thước phù hợp.</p>
+                                    </div>
+                                    <button onclick="simulateBarcodeScan()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-semibold transition flex items-center justify-center space-x-2">
+                                        <i class="fa-solid fa-barcode"></i>
+                                        <span>Quét Mã Vận Đơn Nhanh</span>
+                                    </button>
+                                </div>
+
+                                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">2. Cảm Biến IoT & Chống Gian Lận</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Hệ thống Loadcell cân trọng lượng & Camera AI kiểm tra chống tráo đổi bưu kiện phần cứng.</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2 text-xs font-semibold text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>Cảm biến Loadcell & AI: Sẵn sàng</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Nạp Hàng Vào Tủ -->
+                            <div class="bg-brand-50 border border-brand-200 rounded-xl p-5">
+                                <h4 class="font-bold text-brand-900 text-sm mb-3">Form Gửi Hàng Vào Trạm VELOBOX (VB-01)</h4>
+                                <form onsubmit="handleShipperSubmit(event)" class="space-y-3">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Mã vận đơn</label>
+                                            <input type="text" id="shipTracking" required class="w-full text-xs bg-white border border-slate-300 rounded-lg p-2.5" placeholder="SPXVN...">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Số Căn hộ / Người nhận</label>
+                                            <input type="text" id="shipReceiver" required class="w-full text-xs bg-white border border-slate-300 rounded-lg p-2.5" placeholder="Căn hộ A-1204">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Chọn Kích Thước Ô Tủ (AI Dynamic)</label>
+                                            <select id="shipSize" class="w-full text-xs bg-white border border-slate-300 rounded-lg p-2.5">
+                                                <option value="S">Size S (Nhỏ - Ví dụ: Sách, Mỹ phẩm)</option>
+                                                <option value="M" selected>Size M (Trung bình - Hộp giày, Quần áo)</option>
+                                                <option value="L">Size L (Lớn - Thùng hàng cồng kềnh)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Chọn Trạm VELOBOX</label>
+                                            <select id="shipLocker" class="w-full text-xs bg-white border border-slate-300 rounded-lg p-2.5">
+                                                <option value="VB-01">VB-01 - Sảnh Tòa A (Chung cư Thủy Lợi)</option>
+                                                <option value="VB-02">VB-02 - Tầng hầm B1 (Khoang Mát)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2 mt-2">
+                                        <i class="fa-solid fa-door-open"></i>
+                                        <span>Mở Tủ Tự Động & Nạp Hàng Ngay</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Shipper Stats & Route Optimization -->
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center space-x-2 border-b pb-2">
+                                <i class="fa-solid fa-route text-brand-600"></i>
+                                <span>Tối Ưu Tuyến Đường Shipper (AI)</span>
+                            </h3>
+                            <p class="text-xs text-slate-600 mb-3">Hệ thống gợi ý lịch trình gom đơn vào trạm gần nhất giúp Shipper tiết kiệm 45% quãng đường di chuyển.</p>
+                            <div class="space-y-2 text-xs">
+                                <div class="bg-slate-50 p-2.5 rounded-lg border flex justify-between items-center">
+                                    <span>Điểm đến: Trạm VB-01 (Tòa A)</span>
+                                    <span class="font-bold text-emerald-600">8 ô trống</span>
+                                </div>
+                                <div class="bg-slate-50 p-2.5 rounded-lg border flex justify-between items-center">
+                                    <span>Điểm đến: Trạm VB-02 (Tầng Hầm)</span>
+                                    <span class="font-bold text-emerald-600">12 ô trống</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center space-x-2 border-b pb-2">
+                                <i class="fa-solid fa-box-archive text-amber-600"></i>
+                                <span>Xử Lý Hàng Tồn Quá Hạn (>24h/48h)</span>
+                            </h3>
+                            <p class="text-xs text-slate-600 mb-3">Thu hồi các kiện hàng cư dân chưa đến nhận để giải phóng ô tủ.</p>
+                            <button onclick="simulateRecall()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
+                                Lệnh Thu Hồi Hàng Tồn Kho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== 3. ADMIN DASHBOARD ====================
+        function getAdminDashboardHTML() {
+            return `
+                <div class="space-y-6">
+                    <!-- Top Metric Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">Tổng Trạm VeloBox</p>
+                                <h4 class="text-2xl font-black text-slate-900 mt-1">12 Trạm</h4>
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-up"></i> Hoạt động 100%</span>
+                            </div>
+                            <div class="bg-brand-100 text-brand-700 w-12 h-12 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-cubes"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">Đơn Hàng Hôm Nay</p>
+                                <h4 class="text-2xl font-black text-slate-900 mt-1">482 Đơn</h4>
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-up"></i> +18% so với hôm qua</span>
+                            </div>
+                            <div class="bg-blue-100 text-blue-700 w-12 h-12 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">Hiệu Suất Lấp Đầy</p>
+                                <h4 class="text-2xl font-black text-slate-900 mt-1">78.5%</h4>
+                                <span class="text-xs text-brand-600 font-semibold">Tối ưu bằng AI Dynamic</span>
+                            </div>
+                            <div class="bg-purple-100 text-purple-700 w-12 h-12 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">Cảnh Báo An Ninh</p>
+                                <h4 class="text-2xl font-black text-slate-900 mt-1">0 Lỗi</h4>
+                                <span class="text-xs text-emerald-600 font-semibold">Hệ thống an toàn tuyệt đối</span>
+                            </div>
+                            <div class="bg-emerald-100 text-emerald-700 w-12 h-12 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lockers Network Management Table -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                                <i class="fa-solid fa-network-wired text-brand-600"></i>
+                                <span>Quản Lý Mạng Lưới Điểm Tủ & Trạng Thái IoT Thực Tế</span>
+                            </h3>
+                            <button onclick="showToast('Thêm trạm', 'Mở form cấu hình trạm VeloBox mới', 'info')" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Thêm Điểm Tủ Mới</span>
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-100 uppercase font-bold text-slate-700">
+                                    <tr>
+                                        <th class="p-3 rounded-l-xl">Mã Trạm</th>
+                                        <th class="p-3">Vị trí / Khu vực</th>
+                                        <th class="p-3">Tổng số ô</th>
+                                        <th class="p-3">Ô còn trống</th>
+                                        <th class="p-3">Nhiệt độ / Khoang</th>
+                                        <th class="p-3">Trạng thái</th>
+                                        <th class="p-3 rounded-r-xl text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${lockers.map(l => `
+                                        <tr>
+                                            <td class="p-3 font-bold text-slate-900">${l.id}</td>
+                                            <td class="p-3">${l.location}</td>
+                                            <td class="p-3 font-semibold">${l.total} ô</td>
+                                            <td class="p-3 text-emerald-600 font-bold">${l.available} ô</td>
+                                            <td class="p-3">${l.temp}</td>
+                                            <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">${l.status}</span></td>
+                                            <td class="p-3 text-right">
+                                                <button onclick="inspectLocker('${l.id}')" class="text-brand-600 hover:text-brand-800 font-bold px-2 py-1">Kiểm tra IoT</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== INTERACTION FUNCTIONS ====================
+        function openLockerModal(tracking, otp) {
+            showToast("Mã xác thực mở tủ", `Mã OTP nhận hàng cho đơn ${tracking} là: ${otp}. Hãy quét mã QR tại màn hình tủ VB-01!`, "success");
+        }
+
+        function simulateC2CDropoff() {
+            showToast("Ký gửi C2C", "Đã khởi tạo lệnh ký gửi nội khu. Vui lòng cho đồ vào ô tủ trống số #04.", "success");
+        }
+
+        function simulateColdStorage() {
+            showToast("Khoang Mát (Micro-Cold)", "Đã kích hoạt chế độ làm mát 18°C cho ngăn tủ đồ ăn tươi sống của bạn!", "success");
+        }
+
+        function simulateBarcodeScan() {
+            document.getElementById('shipTracking').value = "SPXVN" + Math.floor(10000000 + Math.random() * 90000000);
+            showToast("Quét mã thành công", "AI Camera đã nhận diện mã vận đơn & tự động gán kích thước ô M.", "success");
+        }
+
+        function handleShipperSubmit(e) {
+            e.preventDefault();
+            const track = document.getElementById('shipTracking').value;
+            const receiver = document.getElementById('shipReceiver').value;
+            showToast("Gửi hàng thành công!", `Đơn ${track} đã được nạp vào tủ. Hệ thống đã gửi tin nhắn Zalo ZNS tới cư dân ${receiver}.`, "success");
+            e.target.reset();
+        }
+
+        function simulateRecall() {
+            showToast("Thu hồi thành công", "Đã thu hồi 2 kiện hàng lưu quá 48h về kho trung chuyển.", "success");
+        }
+
+        function inspectLocker(id) {
+            showToast("Kiểm tra IoT", `Hệ thống kết nối trực tuyến với trạm ${id}: Khóa từ hoạt động tốt, Camera AI ổn định.`, "info");
+        }
+
+        // Chatbot simulated response
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const chatContainer = document.getElementById('chatMessages');
+            chatContainer.innerHTML += `<div class="bg-brand-50 text-brand-900 p-2.5 rounded-xl text-right font-medium">Bạn: ${msg}</div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                let reply = "VELOBOX hoạt động 24/7. Bạn có thể đến trạm VB-01 bất cứ lúc nào và nhập mã OTP trên App để nhận hàng.";
+                if(msg.toLowerCase().includes('vị trí') || msg.toLowerCase().includes('tram')) {
+                    reply = "Trạm VeloBox gần nhất đặt tại Sảnh Tòa A (VB-01) và Tầng hầm R2 (VB-02).";
+                } else if(msg.toLowerCase().includes('phí') || msg.toLowerCase().includes('tiền')) {
+                    reply = "Hệ thống miễn phí lưu kho trong 24 giờ đầu tiên. Sau 24h tính phí 5.000đ/12h tiếp theo.";
+                }
+                chatContainer.innerHTML += `<div class="bg-slate-100 p-2.5 rounded-xl text-slate-700">Trợ lý AI: ${reply}</div>`;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 600);
+        }
+
+        // Toast Helper
+        function toastTimer = null;
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+            
+            const icon = document.getElementById('toastIcon');
+            if(type === 'success') {
+                icon.className = "fa-solid fa-circle-check text-brand-400 text-xl";
+            } else if(type === 'info') {
+                icon.className = "fa-solid fa-circle-info text-sky-400 text-xl";
+            } else {
+                icon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-xl";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            if(toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
